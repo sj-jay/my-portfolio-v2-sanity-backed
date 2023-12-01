@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const coverColor = getRandomColor();
 
     return {
-      title: `${project.name} | Project`,
+      title: `${project.name} | Projects`,
       description: project.tagline,
       openGraph: {
         images: project.coverImage?.image || `https://fakeimg.pl/900x460/${coverColor}/000000?text=${project.name.replace(" ", "+")}`,

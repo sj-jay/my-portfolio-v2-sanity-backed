@@ -4,6 +4,8 @@ import type { ProfileType } from "@/types";
 import { PortableText } from "@portabletext/react";
 import { BiEnvelope, BiFile } from "react-icons/bi";
 
+
+
 export default async function About() {
   const profile: ProfileType[] = await getProfile();
 
