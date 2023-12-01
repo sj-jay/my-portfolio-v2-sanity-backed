@@ -1,36 +1,203 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Step to showcase content with Sanity
 
-## Getting Started
+necessary steps to showcase content with Sanity:
 
-First, run the development server:
+Create schema file, > Query the dataset >  Add Type > Display the content in your application.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+touch schemas/project.ts
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Schema for project
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+// schemas/project.ts
 
-## Learn More
+import { BiPackage } from "react-icons/bi";
+import { defineField } from "sanity";
 
-To learn more about Next.js, take a look at the following resources:
+const project = {
+  name: "project",
+  title: "Project",
+  description: "Project Schema",
+  type: "document",
+  icon: BiPackage,
+  fields: [
+    {
+      name: "name",
+      title: "Name",
+      type: "string",
+      description: "Enter the name of the project",
+    },
+    defineField({
+      name: "tagline",
+      title: "Tagline",
+      type: "string",
+      validation: (rule) => rule.max(60).required(),
+    }),
+    defineField({
+      name: "slug",
+      title: "Slug",
+      type: "slug",
+      description:
+        "Add a custom slug for the URL or generate one from the name",
+      options: { source: "name" },
+      validation: (rule) => rule.required(),
+    }),
+    {
+      name: "logo",
+      title: "Project Logo",
+      type: "image",
+    },
+    {
+      name: "projectUrl",
+      title: "Project URL",
+      type: "url",
+    },
+    {
+      name: "coverImage",
+      title: "Cover Image",
+      type: "image",
+      description: "Upload a cover image for this project",
+      options: { hotspot: true },
+      fields: [
+        {
+          name: "alt",
+          title: "Alt",
+          type: "string",
+        },
+      ],
+    },
+    {
+      name: "description",
+      title: "Description",
+      type: "array",
+      description: "Write a full description about this project",
+      of: [{ type: "block" }],
+    },
+  ],
+};
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+export default project;
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+```
 
-## Deploy on Vercel
+## Add Project Schema to schemaType
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+// schemas/index.ts
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+import job from "./job";
+import profile from "./profile";
+import project from "./project";
+
+export const schemaTypes = [profile, job, project];
+
+```
+
+## Visit your studio, click the project schema, and add as many projects as you want
+
+## Get all the Project
+
+```bash
+
+// sanity/sanity.query.ts
+
+export async function getProjects() {
+  return client.fetch(
+    groq`*[_type == "project"]{
+      _id, 
+      name,
+      "slug": slug.current,
+      tagline,
+      "logo": logo.asset->url,
+    }`
+  );
+}
+
+```
+
+## Add the type
+
+```bash
+
+// types/index.ts
+
+export type ProjectType = {
+  _id: string;
+  name: string;
+  slug: string;
+  tagline: string;
+  projectUrl: string;
+  logo: string;
+  coverImage: {
+    alt: string | null;
+    image: string;
+  };
+  description: PortableTextBlock[];
+};
+
+```
+
+## display the content in projects Page
+
+```bash
+
+mkdir app/projects && touch app/projects/page.tsx
+
+```
+
+```bash
+
+// app/projects/page.tsx
+
+import Image from "next/image";
+import Link from "next/link";
+import { getProjects } from "@/sanity/sanity.query";
+import type { ProjectType } from "@/types";
+
+export default async function Project() {
+  const projects: ProjectType[] = await getProjects();
+
+  return (
+    <main className="max-w-7xl mx-auto md:px-16 px-6">
+      <section className="max-w-2xl mb-16">
+        <h1 className="text-3xl font-bold tracking-tight sm:text-5xl mb-6 lg:leading-[3.7rem] leading-tight">
+          Featured projects I&apos;ve built over the years
+        </h1>
+        <p className="text-base text-zinc-400 leading-relaxed">
+          I&apos;ve worked on tons of little projects over the years but these
+          are the ones that I&apos;m most proud of. Many of them are
+          open-source, so if you see something that piques your interest, check
+          out the code and contribute if you have ideas for how it can be
+          improved.
+        </p>
+      </section>
+
+      <section className="grid xl:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-5 mb-12">
+        {projects.map((project) => (
+          <Link
+            href={`/projects/${project.slug}`}
+            key={project._id}
+            className="flex items-center gap-x-4 bg-[#1d1d20] border border-transparent hover:border-zinc-700 p-4 rounded-lg ease-in-out"
+          >
+            <Image
+              src={project.logo}
+              width={60}
+              height={60}
+              alt={project.name}
+              className="bg-zinc-800 rounded-md p-2"
+            />
+            <div>
+              <h2 className="font-semibold mb-1">{project.name}</h2>
+              <div className="text-sm text-zinc-400">{project.tagline}</div>
+            </div>
+          </Link>
+        ))}
+      </section>
+    </main>
+  );
+}
+
+```
