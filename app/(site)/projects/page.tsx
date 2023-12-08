@@ -13,11 +13,15 @@ export default async function Project() {
             Featured projects I&apos;ve built over the years
           </h1>
           <p className="text-base text-zinc-400 leading-relaxed">
-            I&apos;ve worked on tons of little projects over the years but these
-            are the ones that I&apos;m most proud of. Many of them are
-            open-source, so if you see something that piques your interest, check
-            out the code and contribute if you have ideas for how it can be
-            improved.
+            Throughout my journey, I&apos;ve engaged in a variety of projects, 
+            each shaping my skills and understanding in the tech world. 
+            This section highlights those I hold in highest regard, 
+            including my foray into artificial intelligence with an AI chatbot project 
+            and the creation of this portfolio. 
+            These projects showcase my enthusiasm for embracing different 
+            technological challenges and my commitment to continual learning. 
+            Each one represents a significant step in my evolving career as a developer. 
+            Take a look and see the milestones that mark my professional journey.
           </p>
         </section>
   
