@@ -6,9 +6,9 @@ import { PortableText } from "@portabletext/react";
 import Link from "next/link";
 
 type Props = {
-  params: {
+  params: Promise<{
     project: string;
-  };
+  }>;
 };
 
 function getRandomColor(){
@@ -23,8 +23,8 @@ function getRandomColor(){
 
 // Dynamic metadata for SEO
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  
-    const slug = params.project;
+
+    const { project: slug } = await params;
     const project: ProjectType = await getSingleProject(slug);
     const coverColor = getRandomColor();
 
@@ -42,7 +42,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 
 export default async function Project({ params }: Props) {
-    const slug = params.project;
+    const { project: slug } = await params;
     const project: ProjectType = await getSingleProject(slug);
     const coverColor = getRandomColor();
   
