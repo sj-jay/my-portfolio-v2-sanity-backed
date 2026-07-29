@@ -2,6 +2,9 @@
   "name": "my-portfolio-v2-sanity-backed",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": "24.x"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -29,6 +32,7 @@
     "typescript": "^5"
   },
   "overrides": {
+    "sharp": "^0.35.3",
     "uuid": "^14.0.0",
     "postcss": "^8.5.10",
     "prismjs": "^1.30.0",
